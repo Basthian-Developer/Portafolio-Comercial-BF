@@ -12,13 +12,13 @@ services:
 
   py:
     build: 
-      context: ./backend
+      context: ./api
       dockerfile: dockerfile
     ports:
       - 8000:8000
     working_dir: /app
     volumes:
-      - ./backend:/app
+      - ./api:/app
     networks:
       - portfolio
 networks:
