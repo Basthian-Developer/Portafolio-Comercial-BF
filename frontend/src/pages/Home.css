@@ -1,0 +1,23 @@
+/* CSS complementario: borde compuesto y animaciones específicas de Home. */
+.plan-destacado {
+  background:
+    linear-gradient(var(--color-fondo-2), var(--color-fondo-2)) padding-box,
+    linear-gradient(135deg, var(--color-celeste), var(--color-turquesa)) border-box;
+  border: 2px solid transparent;
+  box-shadow: 0 0 50px rgb(20 184 166 / 25%);
+}
+
+/* El contenido es visible por defecto; el hook activa la entrada progresiva. */
+[data-revelar] { transition: opacity 0.7s ease, transform 0.7s ease, border-color 0.3s ease; }
+.revelar-pendiente { opacity: 0; transform: translateY(28px); }
+.ventana-codigo { animation: flotar 6s ease-in-out infinite; }
+
+@keyframes flotar {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+/* Aunque el observador no actúe, todo queda visible con movimiento reducido. */
+@media (prefers-reduced-motion: reduce) {
+  .revelar-pendiente { opacity: 1; transform: none; }
+}
