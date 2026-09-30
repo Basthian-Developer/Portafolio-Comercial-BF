@@ -7,7 +7,9 @@ router = APIRouter()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000"
+        "http://localhost:3000",
+        "http://localhost:51802",
+        "http://localhost:62664"
     ],
     allow_credentials=True,
     allow_methods=["*"],

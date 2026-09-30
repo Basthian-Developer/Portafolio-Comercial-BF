@@ -1,111 +1,48 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+@import "tailwindcss";
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+/* Tokens compartidos: generan utilidades como bg-fondo y text-turquesa. */
+@theme {
+  --color-fondo: #06122b;
+  --color-fondo-2: #0a1c3f;
+  --color-superficie: rgb(255 255 255 / 5%);
+  --color-borde: rgb(148 210 255 / 16%);
+  --color-texto: #eaf6ff;
+  --color-texto-suave: #9fb8d1;
+  --color-celeste: #0ea5e9;
+  --color-turquesa: #14b8a6;
+  --color-tinta: #031225;
+  --font-sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
+/* Base mínima; Tailwind Preflight ya aplica el reset de márgenes y box-sizing. */
+@layer base {
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body {
+    @apply min-w-[320px] bg-fondo font-sans leading-relaxed text-texto;
+    /* Las tres capas de luz se expresan con mayor claridad en CSS. */
+    background-image:
+      radial-gradient(600px 400px at 85% 5%, rgb(14 165 233 / 25%), transparent 70%),
+      radial-gradient(500px 400px at 5% 45%, rgb(20 184 166 / 18%), transparent 70%),
+      linear-gradient(180deg, var(--color-fondo), var(--color-fondo-2));
+    background-attachment: fixed;
   }
+  :focus-visible { outline: 2px solid var(--color-turquesa); outline-offset: 5px; }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+/* Estilos repetidos: @apply reutiliza los mismos tokens y utilidades de Tailwind. */
+@layer components {
+  .texto-degradado { @apply bg-linear-135 from-celeste to-turquesa bg-clip-text text-transparent; }
+  .boton {
+    @apply inline-flex cursor-pointer items-center justify-center rounded-full border border-transparent px-6 py-3 text-center text-base font-semibold transition duration-250 motion-safe:hover:-translate-y-0.5;
   }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
+  .boton-principal {
+    @apply bg-linear-135 from-celeste to-turquesa text-tinta shadow-[0_8px_28px_rgba(14,165,233,0.35)] hover:shadow-[0_12px_34px_rgba(20,184,166,0.5)];
   }
+  .boton-borde { @apply border-borde bg-superficie text-texto hover:border-turquesa; }
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+/* Respetar la preferencia del sistema, incluido el scroll por anclas. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }

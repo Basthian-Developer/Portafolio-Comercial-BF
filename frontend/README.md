@@ -1,75 +1,129 @@
-# React + TypeScript + Vite
+# Frontend del portafolio comercial
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend de React, TypeScript, Vite y Tailwind CSS para el portafolio comercial BF. `pages/Home.tsx` adapta el template HTML a React, con presentación, proyectos, planes y contacto. Los planes reflejan la planificación comercial acordada; los proyectos, estadísticas y contacto todavía conservan ejemplos del template.
 
-Currently, two official plugins are available:
+## Estructura por capas
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Inspirada en [CRM-Evolution](https://github.com/Basthian-Developer/CRM-Evolution/blob/main/documentacion/arquitectura.md):
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```text
+frontend/
+├── public/                     # Archivos servidos directamente, como favicon.svg
+├── src/
+│   ├── assets/                 # Imágenes y recursos importados desde el código
+│   ├── components/             # Elementos de interfaz reutilizables
+│   ├── config/
+│   │   └── dependencies/       # Composición de servicios y repositorios
+│   ├── hooks/                  # Estado y coordinación de lógica con React
+│   ├── models/                 # Tipos y entidades del dominio
+│   ├── pages/
+│   │   ├── Home.tsx            # Página comercial que compone las secciones
+│   │   ├── Home.css            # Animaciones y borde degradado del plan destacado
+│   │   └── views/              # Futuras vistas internas de las páginas
+│   ├── repositories/
+│   │   ├── interface/          # Contratos de acceso a datos
+│   │   └── api/                # Futuras implementaciones HTTP
+│   ├── router/                 # Futura configuración de navegación
+│   ├── services/               # Casos de uso y reglas de negocio
+│   ├── index.css               # Estilos globales
+│   └── main.tsx                # Entrada de React; monta Home en StrictMode
+├── index.html                  # Documento HTML y contenedor root
+├── package.json                # Dependencias y comandos
+├── package-lock.json           # Versiones de dependencias fijadas por npm
+├── vite.config.ts              # Configuración de Vite y plugin de React
+├── tsconfig*.json              # Configuración de TypeScript
+├── eslint.config.js            # Reglas de análisis estático
+└── .gitignore                  # Exclusiones de dependencias y compilación
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Las carpetas sin implementación contienen `.gitkeep` para conservarlas en Git. Se puede retirar cada marcador al añadir código a su carpeta.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Responsabilidades y dependencias
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+El flujo previsto cuando exista acceso a datos es:
 
+```text
+pages / views → hooks → services → repositories/interface
+                                         ↑
+                                  repositories/api
 ```
+
+- `pages` compone pantallas; `pages/views` alberga vistas internas cuando sean necesarias. `components` contiene piezas visuales reutilizables que reciben datos y eventos por propiedades.
+- `hooks` conecta el estado de React con los servicios y expone estados de carga, resultados y errores.
+- `services` concentra reglas de negocio y depende de contratos de repositorios, sin importar componentes de React ni detalles HTTP.
+- `models` define tipos compartidos del dominio, sin depender de la interfaz o del transporte.
+- `repositories/interface` declara los contratos; `repositories/api` los implementará y concentrará las llamadas HTTP y la adaptación de respuestas.
+- `config/dependencies` construirá repositorios y servicios para que los hooks puedan utilizarlos. `config` admite otras configuraciones compartidas cuando sean necesarias.
+- `router` contendrá las rutas cuando se incorpore navegación.
+
+La adaptación reserva repositorios API porque este proyecto ya tiene un backend FastAPI. No se añade la fuente JSON del CRM ni su configuración de React Query, pues todavía no existen esas necesidades aquí.
+
+## Convenciones y estado actual
+
+Usar PascalCase para componentes y modelos (`Home.tsx`), el prefijo `use` para hooks y nombres descriptivos para servicios y repositorios. Los estilos específicos de Home viven junto a la página y los globales en `index.css`.
+
+`App.tsx` pasa a ser `pages/Home.tsx`; `main.tsx` importa y renderiza `Home` directamente. Los recursos visuales siguen en `assets`. Se usan imports relativos: no hay alias configurados.
+
+La página usa `Navbar`, `ProyectoCard` y `PlanCard` desde `components`, los contratos `Proyecto` y `Plan` desde `models`, datos locales desde `config/portafolio.ts` y el hook `useRevelado` desde `hooks`. No hay router instalado, consultas HTTP, servicios ni inyección de dependencias funcionando todavía. No introducir llamadas HTTP directamente en páginas o componentes cuando se conecte la API.
+
+## Instalación y comandos
+
+Desde `frontend/`, con Node.js 22.12 o superior dentro de la rama 22 y npm:
+
+```bash
+npm ci
+npm run dev
+```
+
+| Comando | Función |
+| --- | --- |
+| `npm run dev` | Inicia Vite en `0.0.0.0:3000`, accesible en `http://localhost:3000`. |
+| `npm run lint` | Ejecuta ESLint. |
+| `npm run build` | Comprueba TypeScript y genera `dist/`. |
+| `npm run preview` | Sirve localmente la compilación de `dist/`. |
+
+No hay un ejecutor de pruebas configurado. Tampoco hay variables de entorno ni proxy para la API definidos actualmente. Al incorporar HTTP, habrá que definir la URL del backend y revisar CORS para el origen utilizado.
+
+El entorno Docker y el despliegue se describen en el [README raíz](../README.md). La documentación del backend está en [api/README.md](../api/README.md).
+
+## Tailwind CSS con Vite
+
+La integración ya está instalada. Para reproducir la instalación desde la raíz:
+
+```bash
+cd frontend
+npm install -D tailwindcss @tailwindcss/vite
+npm run dev
+```
+
+En un clon nuevo basta con `npm ci` para instalar las versiones del lockfile. Vite ya existía en el proyecto: no es necesario crear otra aplicación.
+
+`vite.config.ts` registra `tailwindcss()` junto a `react()`. `src/index.css` importa `tailwindcss` y define la paleta con `@theme`. La integración utiliza Tailwind 4 y no necesita `tailwind.config.js`, `postcss.config.js` ni `npx tailwindcss init -p`. Referencia: [instalación oficial con Vite](https://tailwindcss.com/docs/installation/using-vite).
+
+### Cómo se reparten los estilos
+
+- Tailwind en los componentes: distribución, espaciados, tipografía, colores, responsive y estados hover.
+- `index.css`: tokens, fondo global, foco accesible y estilos compartidos de botones mediante `@apply`.
+- `pages/Home.css`: borde compuesto del plan destacado, flotación y entrada al hacer scroll.
+
+El menú y la ventana de código cambian de presentación a los 821 px, como en el template. Las rejillas adaptan sus columnas al espacio disponible. El movimiento reducido desactiva animaciones y mantiene visible el contenido.
+
+### Datos y lógica de React
+
+Editar `config/portafolio.ts` para cambiar nombre, teléfono de WhatsApp, estadísticas, proyectos y planes. **El número `56900000000`, los proyectos, las cifras y la promesa de respuesta en menos de 24 horas proceden del template y no están verificados.** El nombre se personalizó como Basthian Flores. El enlace de WhatsApp abre una conversación, pero la página no envía mensajes automáticamente.
+
+`Home` compone las secciones y genera tarjetas con `map`. Los componentes reciben propiedades tipadas y no acceden a la API. Los datos estáticos se mantienen fuera del render, por lo que no se necesita `useMemo` ni duplicarlos en `useState`.
+
+`Navbar` usa `useState` para el menú y el fondo al desplazarse, `useRef` para devolver el foco al cerrar con Escape y `useEffect` para registrar y retirar listeners. El menú cierra al elegir un enlace y al pasar a escritorio.
+
+`useRevelado` usa `useRef` para limitar la búsqueda a `main` y `useEffect` para observar elementos con `IntersectionObserver`. Desconecta el observador al desmontar; los elementos son visibles si no hay soporte o se solicita movimiento reducido. Los comentarios explican responsabilidades, estado, efectos y bloques de JSX.
+
+### Planes comerciales acordados
+
+- Básico: desde $85.000 CLP más el dominio, sin descontarlo de la tarifa base. Web sencilla sin backend ni base de datos; mantenimiento de $15.000 CLP/mes.
+- Pro — Aplicación Web Completa: frontend, backend y base de datos, autenticación, rol administrador y CRUD. Precio aún por definir; mantenimiento de $15.000 CLP/mes.
+- Avanzado: cotización y mantenimiento según proyecto; capacidades e infraestructura según requisitos.
+
+`Plan` incluye precio de presentación, detalle del precio y mantenimiento. Las condiciones compartidas están en `condicionesComerciales` y se muestran debajo de las tarjetas. Para Básico se prioriza la aclaración posterior de que el dominio se cobra adicionalmente; Pro y Avanzado incluyen hosting y dominio sin inventar una duración contratada. Clouding.io se consideró para Pro, pero no hay infraestructura contratada ni configurada aquí.
+
+La futura carga de estos tres planes como registros de `services` en Supabase y su administración desde React Native siguen pendientes. Actualmente son datos locales: editarlos requiere volver a compilar y desplegar el frontend.
