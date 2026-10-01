@@ -110,7 +110,7 @@ El menú y la ventana de código cambian de presentación a los 821 px, como en 
 
 ### Datos y lógica de React
 
-Editar `config/portafolio.ts` para cambiar nombre, teléfono de WhatsApp, estadísticas, proyectos y planes. **El número `56900000000`, los proyectos, las cifras y la promesa de respuesta en menos de 24 horas proceden del template y no están verificados.** El nombre se personalizó como Basthian Flores. El enlace de WhatsApp abre una conversación, pero la página no envía mensajes automáticamente.
+Editar `config/portafolio.ts` para cambiar nombre, correo, enlaces de Instagram y LinkedIn, estadísticas, proyectos y planes. Los indicadores del hero son textos neutros porque el portafolio está en una etapa inicial de promoción. El contacto usa actualmente Instagram, LinkedIn y correo electrónico.
 
 `Home` compone las secciones y genera tarjetas con `map`. Los componentes reciben propiedades tipadas y no acceden a la API. Los datos estáticos se mantienen fuera del render, por lo que no se necesita `useMemo` ni duplicarlos en `useState`.
 
@@ -127,3 +127,10 @@ Editar `config/portafolio.ts` para cambiar nombre, teléfono de WhatsApp, estad�
 `Plan` incluye precio de presentación, detalle del precio y mantenimiento. Las condiciones compartidas están en `condicionesComerciales` y se muestran debajo de las tarjetas. Para Básico se prioriza la aclaración posterior de que el dominio se cobra adicionalmente; Pro y Avanzado incluyen hosting y dominio sin inventar una duración contratada. Clouding.io se consideró para Pro, pero no hay infraestructura contratada ni configurada aquí.
 
 La futura carga de estos tres planes como registros de `services` en Supabase y su administración desde React Native siguen pendientes. Actualmente son datos locales: editarlos requiere volver a compilar y desplegar el frontend.
+
+
+### Envío de consultas
+
+El modal de planes usa `services/ConsultaService.ts` para enviar `nombre`, `correo`, `telefono`, `plan` y `problema` mediante `POST /api/consultas/crear`. El plan visual tiene IDs locales `1` (Básico), `2` (Pro) y `3` (Avanzado), porque la columna `portafolio.consulta.plan` es `bigint`.
+
+La URL base puede cambiarse con `VITE_API_URL`; en desarrollo usa `http://localhost:8000/api` y en producción usa `/api` en el mismo dominio. Los campos administrativos `plazo_inicio`, `plazo_final`, `prioridad` y `estado` no se envían desde el formulario.

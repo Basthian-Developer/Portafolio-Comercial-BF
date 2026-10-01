@@ -1,0 +1,5 @@
+# Dependencias Python para las funciones FastAPI de Vercel y el entorno local.
+fastapi
+uvicorn[standard]
+supabase
+python-dotenv

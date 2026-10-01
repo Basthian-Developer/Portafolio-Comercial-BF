@@ -1,5 +1,6 @@
 // Contrato de un plan comercial; el precio permite una tarifa o un estado de cotización.
 export interface Plan {
+  id: number;
   nombre: string;
   descripcion: string;
   precio: string;

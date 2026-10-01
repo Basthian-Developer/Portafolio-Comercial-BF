@@ -1,16 +1,20 @@
 import type { Proyecto } from '../models/Proyecto';
 import type { Plan } from '../models/Plan';
 
-// Identidad y contacto en un solo lugar. El teléfono aún es el ejemplo del template.
+// Identidad y enlaces de contacto públicos del portafolio.
 export const nombre = 'Basthian Flores';
-export const numeroWhatsapp = '56900000000';
-export const enlaceWhatsapp = `https://wa.me/${numeroWhatsapp}?text=${encodeURIComponent('Hola, me interesa cotizar un proyecto web.')}`;
+export const correo = 'basthianfmillan@gmail.com';
+export const redes = {
+  instagram: 'https://www.instagram.com/basthian_flores?stkn=MW5xZzcxNnVzZzlzaQ==',
+  linkedin: 'https://www.linkedin.com/in/basthian-f-1b895b2a3',
+  correo: `mailto:${correo}`,
+};
 
-// Estas cifras son ilustrativas; deben sustituirse por información real.
+// Mensajes honestos para una etapa inicial de promoción, sin cifras inventadas.
 export const estadisticas = [
-  { valor: '30+', etiqueta: 'Proyectos' },
-  { valor: '5 años', etiqueta: 'De experiencia' },
-  { valor: '100%', etiqueta: 'Clientes felices' },
+  { valor: 'A medida', etiqueta: 'Soluciones' },
+  { valor: 'Cercana', etiqueta: 'Atención' },
+  { valor: 'Clara', etiqueta: 'Planificación' },
 ];
 
 // Datos de ejemplo del template: reemplazar antes de publicar.
@@ -38,6 +42,7 @@ export const proyectos: Proyecto[] = [
 // Planificación comercial acordada. Pro no tiene un precio definitivo todavía.
 export const planes: Plan[] = [
   {
+    id: 1,
     nombre: 'Básico',
     descripcion: 'Web sencilla de una página, landing page o sitio de presentación. Sin backend ni base de datos.',
     precio: 'Desde $85.000 CLP',
@@ -53,6 +58,7 @@ export const planes: Plan[] = [
     ],
   },
   {
+    id: 2,
     nombre: 'Pro',
     descripcion: 'Sistema web completo para negocios que necesitan más que una página informativa.',
     precio: '$300.000 CLP',
@@ -70,6 +76,7 @@ export const planes: Plan[] = [
     ],
   },
   {
+    id: 3,
     nombre: 'Avanzado',
     descripcion: 'Sistema de mayor complejidad. La infraestructura y las capacidades se definen según los requisitos del proyecto.',
     precio: 'Cotización personalizada',

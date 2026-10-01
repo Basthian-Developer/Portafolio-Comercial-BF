@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react';
 import type { Plan } from '../models/Plan';
 
 interface PlanCardProps {
@@ -9,7 +10,6 @@ interface PlanCardProps {
 function PlanCard({ plan, onElegir }: PlanCardProps) {
   return (
     <article data-revelar className={`relative flex flex-col rounded-[22px] border border-borde bg-superficie px-7 py-8 transition-transform duration-300 motion-safe:hover:-translate-y-1.5 ${plan.destacado ? 'plan-destacado' : ''}`}>
-      {plan.destacado && <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-linear-135 from-celeste to-turquesa px-4 py-1 text-xs font-bold text-tinta">Más elegido</span>}
       <h3 className="text-xl font-bold">{plan.nombre}</h3>
       <p className="mt-1 mb-5 text-[0.93rem] text-texto-suave">{plan.descripcion}</p>
       {/* El precio incluye su moneda solo si hay una tarifa definida. */}
@@ -19,7 +19,7 @@ function PlanCard({ plan, onElegir }: PlanCardProps) {
       {/* flex-1 alinea los botones aunque las listas tengan distinto tamaño. */}
       <ul className="mb-7 flex-1">
         {plan.beneficios.map((beneficio) => (
-          <li key={beneficio} className="flex gap-3 py-1.5 text-[0.95rem] text-texto-suave"><span aria-hidden="true" className="font-bold text-turquesa">✓</span>{beneficio}</li>
+          <li key={beneficio} className="flex gap-3 py-1.5 text-[0.95rem] text-texto-suave"><Check size={17} aria-hidden="true" className="mt-0.5 shrink-0 text-turquesa" />{beneficio}</li>
         ))}
       </ul>
       <button type="button" onClick={() => onElegir(plan)} className={`boton ${plan.destacado ? 'boton-principal' : 'boton-borde'}`}>Elegir plan {plan.nombre}</button>
