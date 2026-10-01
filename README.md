@@ -1,10 +1,10 @@
 # Portafolio Comercial BF
 
-Proyecto orientado a construir el portafolio comercial de Basthian Flores: una presentación de sus servicios, proyectos y experiencia profesional.
+Proyecto orientado a construir el portafolio comercial de Basthian Flores : una presentación de sus servicios, proyectos y experiencia profesional.
 
 ## Estado y alcance actual
 
-El proyecto cuenta con una estructura base por capas y una primera página comercial adaptada de un template a React y Tailwind CSS. Incluye presentación, proyectos, planes y contacto. Los planes reflejan la planificación comercial acordada; los proyectos, estadísticas y contacto aún contienen datos de ejemplo. La API mantiene su base de FastAPI; la integración con datos y las funcionalidades de negocio se desarrollarán después.
+El proyecto cuenta con una estructura base por capas y una primera página comercial adaptada de un template a React y Tailwind CSS. Incluye presentación, proyectos, planes y contacto. Los planes reflejan la planificación comercial acordada; los proyectos, estadísticas y contacto aún contienen datos de ejemplo. La API usa FastAPI con una arquitectura por capas; la integración con datos y las funcionalidades de negocio se desarrollarán después.
 
 La organización del frontend toma como referencia la [arquitectura de CRM-Evolution](https://github.com/Basthian-Developer/CRM-Evolution/blob/main/documentacion/arquitectura.md), adaptada a este proyecto.
 
@@ -43,7 +43,7 @@ python -m pip install -r api/requirements.txt
 python -m uvicorn index:app --app-dir api --reload --port 8000
 ```
 
-La documentación de FastAPI está en `http://localhost:8000/docs`. El frontend todavía no consume la API.
+La documentación de FastAPI está en `http://localhost:8000/docs`. El formulario del frontend consume `POST /api/consultas/crear`.
 
 ### Con Docker Compose
 
@@ -63,7 +63,7 @@ npm run lint
 npm run build
 ```
 
-`vercel.json` ejecuta `npm ci` y la compilación dentro de `frontend`, publica `frontend/dist`, conserva el prefijo `/api/` y redirige las demás rutas a `index.html`. Esta configuración está preparada en el repositorio; no implica que el despliegue o la integración estén verificados.
+`vercel.json` ejecuta `npm ci` y la compilación dentro de `frontend`, publica `frontend/dist`, conserva el prefijo `/api/` y redirige las demás rutas a `index.html`. `requirements.txt` en la raíz permite que Vercel instale las dependencias de las funciones Python.
 
 ## Licencia y uso
 

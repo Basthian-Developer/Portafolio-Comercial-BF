@@ -1,9 +1,10 @@
+import { ExternalLink, Mail } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import Navbar from '../components/Navbar';
 import ProyectoCard from '../components/ProyectoCard';
 import PlanCard from '../components/PlanCard';
 import ConsultaModal from '../components/ConsultaModal';
-import { condicionesComerciales, enlaceWhatsapp, estadisticas, nombre, planes, proyectos } from '../config/portafolio';
+import { condicionesComerciales, estadisticas, nombre, planes, proyectos, redes } from '../config/portafolio';
 import useRevelado from '../hooks/useRevelado';
 import './Home.css';
 
@@ -18,8 +19,8 @@ function Home() {
     setPlanSeleccionado(plan);
   }
 
-  function cambiarPlan(nombrePlan: string) {
-    const plan = planes.find((item) => item.nombre === nombrePlan);
+  function cambiarPlan(idPlan: number) {
+    const plan = planes.find((item) => item.id === idPlan);
     if (plan) setPlanSeleccionado(plan);
   }
 
@@ -34,7 +35,7 @@ function Home() {
           <div className="mx-auto grid w-[92%] max-w-[1120px] items-center gap-12 min-[821px]:grid-cols-[1.15fr_0.85fr]">
             <div data-revelar>
               <span className="mb-5 inline-block rounded-full border border-borde bg-superficie px-3.5 py-1.5 text-sm font-semibold text-turquesa">● Disponible para nuevos proyectos</span>
-              <h1 className="mb-5 text-[clamp(2.4rem,6vw,4.2rem)] leading-[1.08] font-bold tracking-[-1.5px]">Creo sitios web que <span className="texto-degradado">venden por ti</span></h1>
+              <h1 className="mb-5 text-[clamp(2.4rem,6vw,4.2rem)] leading-[1.08] font-bold tracking-[-1.5px]">Soy Basthian Flores y creo sitios web que <span className="texto-degradado">venden por ti</span></h1>
               <p className="mb-8 max-w-[520px] text-lg text-texto-suave">Soy desarrollador web y consultor informático. Transformo tu negocio en una presencia digital rápida, moderna y lista para convertir visitas en clientes.</p>
               <div className="mb-10 flex flex-wrap gap-4">
                 <a href="#planes" className="boton boton-principal">Ver planes</a>
@@ -106,8 +107,12 @@ function Home() {
           <div className="mx-auto w-[92%] max-w-[1120px]">
             <div data-revelar className="rounded-[26px] border border-borde bg-linear-135 from-celeste/18 to-turquesa/18 px-6 py-14 text-center">
               <h2 id="titulo-contacto" className="mb-3 text-[clamp(1.7rem,4vw,2.4rem)] font-bold">¿Listo para <span className="texto-degradado">empezar</span>?</h2>
-              <p className="mb-6 text-texto-suave">Cuéntame tu idea y recibe una cotización sin compromiso en menos de 24 horas.</p>
-              <a href={enlaceWhatsapp} className="boton boton-principal" target="_blank" rel="noopener noreferrer">Escríbeme por WhatsApp<span className="sr-only"> (abre en otra pestaña)</span></a>
+              <p className="mb-6 text-texto-suave">Cuéntame tu idea y conversemos sobre la mejor solución para tu proyecto.</p>
+              <div className="flex flex-wrap justify-center gap-3">
+                <a href={redes.instagram} className="boton boton-principal" target="_blank" rel="noopener noreferrer"><ExternalLink size={18} aria-hidden="true" />Instagram<span className="sr-only"> (abre en otra pestaña)</span></a>
+                <a href={redes.linkedin} className="boton boton-borde" target="_blank" rel="noopener noreferrer"><ExternalLink size={18} aria-hidden="true" />LinkedIn<span className="sr-only"> (abre en otra pestaña)</span></a>
+                <a href={redes.correo} className="boton boton-borde"><Mail size={18} aria-hidden="true" />Correo electrónico</a>
+              </div>
             </div>
           </div>
         </section>

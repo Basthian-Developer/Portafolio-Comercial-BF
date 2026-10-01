@@ -1,3 +1,4 @@
+import { Menu, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 // Enlaces locales: esta página no necesita un router.
@@ -54,7 +55,7 @@ function Navbar() {
           onClick={() => setMenuAbierto((abierto) => !abierto)}
           className="cursor-pointer rounded-[10px] border border-borde px-3 py-1.5 text-xl min-[821px]:hidden"
         >
-          <span aria-hidden="true">{menuAbierto ? '✕' : '☰'}</span>
+          {menuAbierto ? <X size={21} aria-hidden="true" /> : <Menu size={21} aria-hidden="true" />}
         </button>
         <ul id="menu-principal" className={`${menuAbierto ? 'flex' : 'hidden'} absolute inset-x-0 top-[70px] flex-col items-center gap-5 border-b border-borde bg-fondo/97 p-6 min-[821px]:static min-[821px]:flex min-[821px]:flex-row min-[821px]:gap-8 min-[821px]:border-0 min-[821px]:bg-transparent min-[821px]:p-0`}>
           {enlaces.map((enlace) => (

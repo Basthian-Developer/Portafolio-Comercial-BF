@@ -1,51 +1,69 @@
-import { useEffect, useId, type FormEvent } from 'react';
+import { CheckCircle2, Send, X } from 'lucide-react';
+import { useEffect, useId, useState, type FormEvent } from 'react';
 import type { Plan } from '../models/Plan';
+import { crearConsulta } from '../services/ConsultaService';
 
 interface ConsultaModalProps {
   planSeleccionado: Plan;
   planes: Plan[];
-  onPlanChange: (nombre: string) => void;
+  onPlanChange: (id: number) => void;
   onClose: () => void;
 }
 
-// Modal de consulta: prepara el formulario para conectarlo a la API posteriormente.
+// Modal de consulta dividido: datos mínimos a la izquierda y resumen del plan a la derecha.
 function ConsultaModal({ planSeleccionado, planes, onPlanChange, onClose }: ConsultaModalProps) {
   const tituloId = useId();
+  const [enviando, setEnviando] = useState(false);
+  const [error, setError] = useState('');
+  const [enviada, setEnviada] = useState(false);
 
   useEffect(() => {
     const overflowAnterior = document.body.style.overflow;
-    const cerrarConEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-    };
+    const cerrarConEscape = (event: KeyboardEvent) => { if (event.key === 'Escape' && !enviando) onClose(); };
     document.body.style.overflow = 'hidden';
     window.addEventListener('keydown', cerrarConEscape);
-    return () => {
-      document.body.style.overflow = overflowAnterior;
-      window.removeEventListener('keydown', cerrarConEscape);
-    };
-  }, [onClose]);
+    return () => { document.body.style.overflow = overflowAnterior; window.removeEventListener('keydown', cerrarConEscape); };
+  }, [enviando, onClose]);
 
-  function enviarConsulta(event: FormEvent<HTMLFormElement>) {
+  async function enviarConsulta(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setError('');
+    const datos = new FormData(event.currentTarget);
+    setEnviando(true);
+    try {
+      await crearConsulta({
+        nombre: String(datos.get('nombre') ?? ''),
+        correo: String(datos.get('correo') ?? ''),
+        telefono: String(datos.get('telefono') ?? ''),
+        plan: planSeleccionado.id,
+        problema: String(datos.get('problema') ?? ''),
+      });
+      setEnviada(true);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'No fue posible enviar la consulta.');
+    } finally {
+      setEnviando(false);
+    }
   }
 
   return (
-    <div className="fixed inset-0 z-[70] grid place-items-center bg-black/70 p-4 backdrop-blur-sm" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+    <div className="fixed inset-0 z-[70] grid place-items-center bg-black/70 p-4 backdrop-blur-sm" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !enviando) onClose(); }}>
       <div role="dialog" aria-modal="true" aria-labelledby={tituloId} className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-3xl border border-borde bg-fondo-2 shadow-2xl">
         <div className="grid min-[760px]:grid-cols-2">
           <section className="p-6 sm:p-8">
             <div className="mb-6 flex items-start justify-between gap-4">
               <div><p className="mb-1 text-sm font-semibold text-turquesa">Solicitar consulta</p><h2 id={tituloId} className="text-2xl font-bold">Cuéntame sobre tu proyecto</h2></div>
-              <button type="button" onClick={onClose} className="rounded-full border border-borde px-3 py-1 text-xl leading-none text-texto-suave hover:text-texto" aria-label="Cerrar formulario">×</button>
+              <button type="button" onClick={onClose} disabled={enviando} className="rounded-full border border-borde px-3 py-1 text-xl leading-none text-texto-suave hover:text-texto disabled:opacity-50" aria-label="Cerrar formulario"><X size={19} aria-hidden="true" /></button>
             </div>
-            <form onSubmit={enviarConsulta} className="grid gap-4">
-              <label className="grid gap-1.5 text-sm font-medium" htmlFor="nombre-cliente">Nombre<input id="nombre-cliente" name="nombre" required autoComplete="name" className="rounded-xl border border-borde bg-superficie px-4 py-3 text-texto outline-none focus:border-turquesa" /></label>
-              <label className="grid gap-1.5 text-sm font-medium" htmlFor="correo-cliente">Correo electrónico<input id="correo-cliente" name="correo" type="email" required autoComplete="email" className="rounded-xl border border-borde bg-superficie px-4 py-3 text-texto outline-none focus:border-turquesa" /></label>
-              <label className="grid gap-1.5 text-sm font-medium" htmlFor="telefono-cliente">Teléfono<input id="telefono-cliente" name="telefono" type="tel" required autoComplete="tel" className="rounded-xl border border-borde bg-superficie px-4 py-3 text-texto outline-none focus:border-turquesa" /></label>
-              <label className="grid gap-1.5 text-sm font-medium" htmlFor="plan-consulta">Plan de interés<select id="plan-consulta" name="plan" value={planSeleccionado.nombre} onChange={(event) => onPlanChange(event.target.value)} className="rounded-xl border border-borde bg-fondo px-4 py-3 text-texto outline-none focus:border-turquesa">{planes.map((plan) => <option key={plan.nombre} value={plan.nombre}>{plan.nombre}</option>)}</select></label>
-              <label className="grid gap-1.5 text-sm font-medium" htmlFor="problema-cliente">¿Qué problema necesitas resolver?<textarea id="problema-cliente" name="problema" required rows={4} className="resize-y rounded-xl border border-borde bg-superficie px-4 py-3 text-texto outline-none focus:border-turquesa" /></label>
-              <button type="submit" className="boton boton-principal mt-2 w-full">Enviar consulta</button>
-            </form>
+            {enviada ? <div role="status" className="rounded-2xl border border-turquesa/40 bg-turquesa/10 p-5"><h3 className="mb-2 flex items-center gap-2 text-xl font-bold"><CheckCircle2 className="text-turquesa" size={22} aria-hidden="true" />Consulta enviada</h3><p className="text-sm text-texto-suave">Recibí tus datos correctamente. Me pondré en contacto contigo para revisar el proyecto.</p><button type="button" onClick={onClose} className="boton boton-principal mt-5">Cerrar</button></div> : <form onSubmit={enviarConsulta} className="grid gap-4">
+              <label className="grid gap-1.5 text-sm font-medium" htmlFor="nombre-cliente">Nombre<input id="nombre-cliente" name="nombre" required minLength={2} maxLength={120} autoComplete="name" className="rounded-xl border border-borde bg-superficie px-4 py-3 text-texto outline-none focus:border-turquesa" /></label>
+              <label className="grid gap-1.5 text-sm font-medium" htmlFor="correo-cliente">Correo electrónico<input id="correo-cliente" name="correo" type="email" required minLength={5} maxLength={254} autoComplete="email" className="rounded-xl border border-borde bg-superficie px-4 py-3 text-texto outline-none focus:border-turquesa" /></label>
+              <label className="grid gap-1.5 text-sm font-medium" htmlFor="telefono-cliente">Teléfono<input id="telefono-cliente" name="telefono" type="tel" required minLength={5} maxLength={40} autoComplete="tel" className="rounded-xl border border-borde bg-superficie px-4 py-3 text-texto outline-none focus:border-turquesa" /></label>
+              <label className="grid gap-1.5 text-sm font-medium" htmlFor="plan-consulta">Plan de interés<select id="plan-consulta" name="plan" value={planSeleccionado.id} onChange={(event) => onPlanChange(Number(event.target.value))} className="rounded-xl border border-borde bg-fondo px-4 py-3 text-texto outline-none focus:border-turquesa">{planes.map((plan) => <option key={plan.id} value={plan.id}>{plan.nombre}</option>)}</select></label>
+              <label className="grid gap-1.5 text-sm font-medium" htmlFor="problema-cliente">¿Qué problema necesitas resolver?<textarea id="problema-cliente" name="problema" required minLength={10} maxLength={3000} rows={4} className="resize-y rounded-xl border border-borde bg-superficie px-4 py-3 text-texto outline-none focus:border-turquesa" /></label>
+              {error && <p role="alert" className="text-sm text-red-300">{error}</p>}
+              <button type="submit" disabled={enviando} className="boton boton-principal mt-2 w-full disabled:cursor-wait disabled:opacity-60">{enviando ? 'Enviando…' : <><Send size={17} aria-hidden="true" />Enviar consulta</>}</button>
+            </form>}
           </section>
           <aside className="border-t border-borde bg-superficie p-6 sm:p-8 min-[760px]:border-t-0 min-[760px]:border-l">
             <p className="mb-2 text-sm font-semibold text-turquesa">Resumen de tu consulta</p><h3 className="text-2xl font-bold">Plan {planSeleccionado.nombre}</h3>
