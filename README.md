@@ -1,6 +1,6 @@
 # Portafolio Comercial BF
 
-Proyecto orientado a construir el portafolio comercial de Basthian Flores: una presentación de sus servicios, proyectos y experiencia profesional.
+Proyecto orientado a construir el portafolio comercial de Basthian Flores : una presentación de sus servicios, proyectos y experiencia profesional.
 
 ## Estado y alcance actual
 
