@@ -129,6 +129,8 @@ create table portafolio.consulta (
 
 Las rutas requieren que la tabla exista y que la clave configurada tenga permisos de lectura e inserción. En esta etapa los endpoints de lectura están abiertos para pruebas en Postman; no uses esta configuración en producción. El frontend envía únicamente los cinco campos obligatorios; los valores opcionales quedan fuera de este flujo.
 
+La desactivación no requiere body: actualiza `estado=false` filtrando por `id` en `SUPABASE_SCHEMA.SUPABASE_CONSULTAS_TABLE` y solicita la fila actualizada con `select("*")`. Si no encuentra una fila, devuelve `404` JSON. La clave configurada debe tener permisos Supabase `UPDATE` y `SELECT` permitidos por los grants y políticas RLS del schema `portafolio`; de lo contrario PostgREST puede rechazar el update. Los errores inesperados del backend quedan registrados en los logs de la función y responden JSON con `detail`, `error` y `type`, útil para diagnosticar fallos de Supabase en Vercel.
+
 ## Despliegue en Vercel
 
 El proyecto utiliza `api/index.py` como función FastAPI y `frontend/dist` como salida estática. Vercel instala las dependencias desde `requirements.txt` en la raíz. En Project Settings → Environment Variables debes configurar `SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_SCHEMA=portafolio` y `SUPABASE_CONSULTAS_TABLE=consulta` para Production, Preview y Development según corresponda. Nunca subas `api/.env`; está excluido por `.gitignore`.

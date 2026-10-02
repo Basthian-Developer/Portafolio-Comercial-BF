@@ -42,7 +42,6 @@ class ConsultaRepository:
             .update({"estado": False})
             .eq("id", consulta_id)
             .select("*")
-            .maybe_single()
             .execute()
         )
-        return response.data
+        return response.data[0] if response.data else None
