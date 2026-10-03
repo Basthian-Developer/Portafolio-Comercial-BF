@@ -8,4 +8,5 @@ export interface Plan {
   mantenimiento: string;
   destacado: boolean;
   beneficios: string[];
+  desgloseInversion: { concepto: string; monto: string }[];
 }

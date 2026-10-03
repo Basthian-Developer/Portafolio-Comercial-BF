@@ -1,5 +1,6 @@
 import { Menu, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import icono from '../assets/icono.png';
 
 // Enlaces locales: esta página no necesita un router.
 const enlaces = [
@@ -46,8 +47,9 @@ function Navbar() {
           }
         }}
       >
-        <a href="#inicio" onClick={() => setMenuAbierto(false)} className="texto-degradado text-xl font-extrabold tracking-tight" aria-label="Basthian Flores, inicio">
-          {'<Basthian />'}
+        <a href="#inicio" onClick={() => setMenuAbierto(false)} className="flex h-full items-center gap-2 texto-degradado text-xl font-extrabold tracking-tight" aria-label="Basthian Flores, inicio">
+          <img src={icono} alt="Basthian Flores" className="h-10 w-auto object-contain" />
+          <span aria-hidden="true">{'<Basthian />'}</span>
         </a>
         {/* El botón comunica su estado y el menú al que pertenece. */}
         <button ref={botonMenu} type="button" aria-controls="menu-principal" aria-expanded={menuAbierto}
