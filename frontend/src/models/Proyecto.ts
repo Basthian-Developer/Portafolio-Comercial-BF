@@ -1,7 +1,12 @@
-// Contrato de los proyectos mostrados en el portafolio.
+// Representación de una fila de portafolio.proyecto.
 export interface Proyecto {
-  titulo: string;
-  descripcion: string;
-  fondo: string;
-  tecnologias: string[];
+  id: number;
+  created_at: string;
+  nombre: string | null;
+  descripcion: string | null;
+  tags: string[] | null;
+  github_url: string;
+  demo_url: string | null;
+  destacado: boolean | null;
+  estado: boolean | null;
 }

@@ -1,4 +1,3 @@
-import type { Proyecto } from '../models/Proyecto';
 import type { Plan } from '../models/Plan';
 
 // Identidad y enlaces de contacto públicos del portafolio.
@@ -16,28 +15,6 @@ export const estadisticas = [
   { valor: 'Cercana', etiqueta: 'Atención' },
   { valor: 'Clara', etiqueta: 'Planificación' },
 ];
-
-// Datos de ejemplo del template: reemplazar antes de publicar.
-export const proyectos: Proyecto[] = [
-      {
-        titulo: "Tienda Online Sabores",
-        descripcion: "E-commerce con carrito, pagos en línea y panel de administración de productos.",
-        fondo: "linear-gradient(135deg, #0EA5E9, #14B8A6)",
-        tecnologias: ["HTML", "CSS", "JavaScript"]
-      },
-      {
-        titulo: "Sistema de Reservas Clínica",
-        descripcion: "Agenda de citas con recordatorios automáticos y gestión de pacientes.",
-        fondo: "linear-gradient(135deg, #14B8A6, #A7F3D0)",
-        tecnologias: ["Node.js", "MySQL", "API REST"]
-      },
-      {
-        titulo: "Landing Constructora Andes",
-        descripcion: "Sitio corporativo optimizado para SEO que triplicó las consultas de clientes.",
-        fondo: "linear-gradient(135deg, #38BDF8, #0EA5E9 60%, #0369A1)",
-        tecnologias: ["SEO", "Responsive", "Formularios"]
-      }
-    ];
 
 // Planificación comercial acordada. Pro no tiene un precio definitivo todavía.
 export const planes: Plan[] = [

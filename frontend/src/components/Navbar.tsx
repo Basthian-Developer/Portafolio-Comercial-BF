@@ -12,32 +12,35 @@ const enlaces = [
 function Navbar() {
   // React controla el menú y el fondo; no se modifican clases manualmente.
   const [menuAbierto, setMenuAbierto] = useState(false);
-  const [conFondo, setConFondo] = useState(() => window.scrollY > 20);
+  const [conFondo, setConFondo] = useState(false);
   const botonMenu = useRef<HTMLButtonElement>(null);
+  const cabecera = useRef<HTMLElement>(null);
+  const sentinela = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // El listener pasivo permite seguir desplazando la página sin bloquearla.
-    function actualizarFondo() {
-      setConFondo(window.scrollY > 20);
-    }
+    const elementoSentinela = sentinela.current;
+    const elementoCabecera = cabecera.current;
+    if (!elementoSentinela || !elementoCabecera) return;
 
-    // Al volver a escritorio se descarta el estado del menú móvil.
-    const escritorio = window.matchMedia('(min-width: 821px)');
-    function cerrarEnEscritorio(event: MediaQueryListEvent) {
-      if (event.matches) setMenuAbierto(false);
-    }
+    const observadorDesplazamiento = new IntersectionObserver(([entrada]) => {
+      setConFondo(!entrada.isIntersecting);
+    });
+    const observadorAncho = new ResizeObserver(([entrada]) => {
+      if (entrada.contentRect.width >= 821) setMenuAbierto(false);
+    });
+    observadorDesplazamiento.observe(elementoSentinela);
+    observadorAncho.observe(elementoCabecera);
 
-    window.addEventListener('scroll', actualizarFondo, { passive: true });
-    escritorio.addEventListener('change', cerrarEnEscritorio);
-    // Limpieza necesaria al desmontar y durante las comprobaciones de StrictMode.
     return () => {
-      window.removeEventListener('scroll', actualizarFondo);
-      escritorio.removeEventListener('change', cerrarEnEscritorio);
+      observadorDesplazamiento.disconnect();
+      observadorAncho.disconnect();
     };
   }, []);
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300 ${conFondo || menuAbierto ? 'border-borde bg-fondo/85 backdrop-blur-xl' : 'border-transparent'}`}>
+    <>
+    <div ref={sentinela} className="h-px" aria-hidden="true" />
+    <header ref={cabecera} className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300 ${conFondo || menuAbierto ? 'border-borde bg-fondo/85 backdrop-blur-xl' : 'border-transparent'}`}>
       <nav aria-label="Navegación principal" className="mx-auto flex h-[70px] w-[92%] max-w-[1120px] items-center justify-between"
         onKeyDown={(event) => {
           // Escape cierra el desplegable y devuelve el foco al botón que lo abrió.
@@ -69,6 +72,7 @@ function Navbar() {
         </ul>
       </nav>
     </header>
+    </>
   );
 }
 
