@@ -4,13 +4,15 @@ import Navbar from '../components/Navbar';
 import ProyectoCard from '../components/ProyectoCard';
 import PlanCard from '../components/PlanCard';
 import ConsultaModal from '../components/ConsultaModal';
-import { condicionesComerciales, estadisticas, nombre, planes, proyectos, redes } from '../config/portafolio';
+import { condicionesComerciales, estadisticas, nombre, planes, redes } from '../config/portafolio';
 import useRevelado from '../hooks/useRevelado';
+import useProyectos from '../hooks/useProyectos';
 import './Home.css';
 
 function Home() {
-  // Los datos estáticos no necesitan estado ni useMemo: se importan una sola vez.
+  // El catálogo de proyectos se carga desde la API dentro de su hook de página.
   const contenido = useRevelado();
+  const { proyectos, cargando: cargandoProyectos, error: errorProyectos, reintentar } = useProyectos();
   const anioActual = new Date().getFullYear();
   const [planSeleccionado, setPlanSeleccionado] = useState<(typeof planes)[number] | null>(null);
   const cerrarModal = useCallback(() => setPlanSeleccionado(null), []);
@@ -73,11 +75,20 @@ function Home() {
           <div className="mx-auto w-[92%] max-w-[1120px]">
             <div data-revelar className="mx-auto mb-12 max-w-[620px] text-center">
               <h2 id="titulo-proyectos" className="mb-3 text-[clamp(1.9rem,4vw,2.6rem)] font-bold tracking-tight">Proyectos <span className="texto-degradado">destacados</span></h2>
-              <p className="text-texto-suave">Algunos trabajos recientes que muestran cómo convierto ideas en soluciones reales.</p>
+              <p className="text-texto-suave">Explora algunos de mis proyectos y las tecnologías utilizadas.</p>
             </div>
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(min(290px,100%),1fr))] gap-6">
-              {proyectos.map((proyecto) => <ProyectoCard key={proyecto.titulo} proyecto={proyecto} />)}
-            </div>
+            {cargandoProyectos ? <p role="status" className="text-center text-texto-suave">Cargando proyectos…</p> : errorProyectos ? (
+              <div role="alert" className="text-center">
+                <p className="mb-4 text-red-300">{errorProyectos}</p>
+                <button type="button" onClick={reintentar} className="boton boton-borde">Reintentar</button>
+              </div>
+            ) : proyectos.length === 0 ? (
+              <p role="status" className="text-center text-texto-suave">No hay proyectos disponibles.</p>
+            ) : (
+              <div className="flex flex-wrap items-stretch justify-center gap-6">
+                {proyectos.map((proyecto) => <ProyectoCard key={proyecto.id} proyecto={proyecto} />)}
+              </div>
+            )}
           </div>
         </section>
 

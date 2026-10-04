@@ -1,6 +1,6 @@
 # Frontend del portafolio comercial
 
-Frontend de React, TypeScript, Vite y Tailwind CSS para el portafolio comercial BF. `pages/Home.tsx` adapta el template HTML a React, con presentación, proyectos, planes y contacto. Los planes reflejan la planificación comercial acordada; los proyectos, estadísticas y contacto todavía conservan ejemplos del template.
+Frontend de React, TypeScript, Vite y Tailwind CSS para el portafolio comercial BF. `pages/Home.tsx` adapta el template HTML a React, con presentación, proyectos, planes y contacto. Los proyectos se cargan desde la API; los planes y datos comerciales se mantienen en configuración local.
 
 ## Estructura por capas
 
@@ -64,7 +64,7 @@ Usar PascalCase para componentes y modelos (`Home.tsx`), el prefijo `use` para h
 
 `App.tsx` pasa a ser `pages/Home.tsx`; `main.tsx` importa y renderiza `Home` directamente. Los recursos visuales siguen en `assets`. Se usan imports relativos: no hay alias configurados.
 
-La página usa `Navbar`, `ProyectoCard` y `PlanCard` desde `components`, los contratos `Proyecto` y `Plan` desde `models`, datos locales desde `config/portafolio.ts` y el hook `useRevelado` desde `hooks`. No hay router instalado, consultas HTTP, servicios ni inyección de dependencias funcionando todavía. No introducir llamadas HTTP directamente en páginas o componentes cuando se conecte la API.
+La página usa `Navbar`, `ProyectoCard` y `PlanCard` desde `components`, los contratos `Proyecto` y `Plan` desde `models`, datos comerciales locales desde `config/portafolio.ts` y hooks desde `hooks`. `useProyectos` coordina la carga desde `services/ProyectoService.ts`; las páginas y componentes no realizan llamadas HTTP.
 
 ## Instalación y comandos
 
@@ -110,13 +110,13 @@ El menú y la ventana de código cambian de presentación a los 821 px, como en 
 
 ### Datos y lógica de React
 
-Editar `config/portafolio.ts` para cambiar nombre, correo, enlaces de Instagram y LinkedIn, estadísticas, proyectos y planes. Los indicadores del hero son textos neutros porque el portafolio está en una etapa inicial de promoción. El contacto usa actualmente Instagram, LinkedIn y correo electrónico.
+Editar `config/portafolio.ts` para cambiar nombre, correo, enlaces de Instagram y LinkedIn, estadísticas y planes. Los proyectos se administran en Supabase y se cargan mediante la API. Los indicadores del hero son textos neutros porque el portafolio está en una etapa inicial de promoción. El contacto usa actualmente Instagram, LinkedIn y correo electrónico.
 
-`Home` compone las secciones y genera tarjetas con `map`. Los componentes reciben propiedades tipadas y no acceden a la API. Los datos estáticos se mantienen fuera del render, por lo que no se necesita `useMemo` ni duplicarlos en `useState`.
+`Home` compone las secciones y genera tarjetas con `map`. Los componentes reciben propiedades tipadas y no acceden a la API. Los proyectos activos llegan desde Supabase; el hook presenta estados de carga, error con reintento y lista vacía.
 
-`Navbar` usa `useState` para el menú y el fondo al desplazarse, `useRef` para devolver el foco al cerrar con Escape y `useEffect` para registrar y retirar listeners. El menú cierra al elegir un enlace y al pasar a escritorio.
+`Navbar` usa `useState` para el menú y `useEffect` con `IntersectionObserver` y `ResizeObserver` para cambiar el fondo al desplazarse y cerrar el menú en escritorio. Los eventos de teclado y clic se manejan con propiedades React.
 
-`useRevelado` usa `useRef` para limitar la búsqueda a `main` y `useEffect` para observar elementos con `IntersectionObserver`. Desconecta el observador al desmontar; los elementos son visibles si no hay soporte o se solicita movimiento reducido. Los comentarios explican responsabilidades, estado, efectos y bloques de JSX.
+`useRevelado` usa `useRef` para limitar la búsqueda a `main` y `useEffect` con `IntersectionObserver` y `MutationObserver` para observar elementos existentes y agregados después por la carga de proyectos. Desconecta los observadores al desmontar; los elementos quedan visibles si no hay soporte o se solicita movimiento reducido.
 
 ### Planes comerciales acordados
 
@@ -134,3 +134,5 @@ La futura carga de estos tres planes como registros de `services` en Supabase y 
 El modal de planes usa `services/ConsultaService.ts` para enviar `nombre`, `correo`, `telefono`, `plan` y `problema` mediante `POST /api/consultas/crear`. El plan visual tiene IDs locales `1` (Básico), `2` (Pro) y `3` (Avanzado), porque la columna `portafolio.consulta.plan` es `bigint`.
 
 La URL base puede cambiarse con `VITE_API_URL`; en desarrollo usa `http://localhost:8000/api` y en producción usa `/api` en el mismo dominio. Los campos administrativos `plazo_inicio`, `plazo_final`, `prioridad` y `estado` no se envían desde el formulario.
+
+`services/ProyectoService.ts` define los contratos de `portafolio.proyecto` y expone `obtenerProyectos`, `obtenerProyecto`, `crearProyecto` y `actualizarProyecto`. La página pública consume la lista mediante `useProyectos` y muestra únicamente proyectos destacados (`destacado === true`) que no estén desactivados.

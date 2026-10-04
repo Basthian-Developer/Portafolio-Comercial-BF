@@ -14,16 +14,20 @@ api/
 ├── routes/
 │   ├── api_router.py           # Agregador de routers bajo /api
 │   ├── health_router.py        # Diagnóstico y disponibilidad
-│   └── consulta_router.py      # Rutas separadas de consultas
+│   ├── consulta_router.py      # Rutas separadas de consultas
+│   └── proyecto_router.py      # CRUD de proyectos sin eliminación
 ├── schemas/
 │   ├── health.py               # Modelos Pydantic de diagnóstico
-│   └── consulta.py             # Modelo del formulario comercial
+│   ├── consulta.py             # Modelo del formulario comercial
+│   └── proyecto.py             # Contratos de proyectos
 ├── services/
 │   ├── health_service.py       # Caso de uso de diagnóstico
-│   └── consulta_service.py     # Caso de uso para guardar consultas
+│   ├── consulta_service.py     # Caso de uso para guardar consultas
+│   └── proyecto_service.py     # Casos de uso de proyectos
 ├── repositories/
 │   ├── health_repository.py    # Fuente del diagnóstico
-│   └── consulta_repository.py  # Persistencia de consultas en Supabase
+│   ├── consulta_repository.py  # Persistencia de consultas en Supabase
+│   └── proyecto_repository.py  # Persistencia de proyectos en Supabase
 ├── requirements.txt
 └── dockerfile
 ```
@@ -56,6 +60,10 @@ La separación se aplica desde ahora al diagnóstico. Al agregar servicios comer
 | `GET` | `/api/consultas/getbyid/{id}` | Obtener una consulta | Una fila o `404` |
 | `PATCH` | `/api/consultas/editar/{id}` | Editar campos enviados | Fila actualizada |
 | `PATCH` | `/api/consultas/desactivar/{id}` | Cambiar `estado` a `false` | Fila desactivada |
+| `POST` | `/api/proyectos/crear` | Crear un proyecto | `201` con la fila creada |
+| `GET` | `/api/proyectos/getall` | Leer todos los proyectos | Lista de filas |
+| `GET` | `/api/proyectos/getbyid/{id}` | Obtener un proyecto | Una fila o `404` |
+| `PUT` | `/api/proyectos/editar/{id}` | Actualizar campos enviados | Fila actualizada |
 | `GET` | `/docs` | Swagger UI generado por FastAPI | Documentación interactiva |
 | `GET` | `/redoc` | Documentación alternativa | ReDoc |
 
@@ -90,6 +98,14 @@ CORS autoriza el origen del navegador, pero no crea autenticación ni una conexi
 ## Próxima ampliación
 
 Para un recurso comercial nuevo, crear el contrato en `schemas`, el repositorio, el servicio y las rutas correspondientes. Después, importar ese router en `index.py` y montarlo con un prefijo explícito. Mantener `index.py` como ensamblador evita que las rutas acumulen lógica de negocio.
+
+## Supabase y proyectos
+
+Los endpoints de proyectos usan `SUPABASE_SCHEMA` y `SUPABASE_PROYECTOS_TABLE` (por defecto `portafolio` y `proyecto`). El cuerpo de creación requiere `github_url`; `demo_url`, `nombre`, `descripcion`, `tags`, `destacado` y `estado` son opcionales y pueden dejarse al valor por defecto de la base de datos. La actualización acepta los campos que se quieran modificar. No se expone endpoint DELETE.
+
+La clave de Supabase necesita permisos `SELECT`, `INSERT` y `UPDATE` junto con las políticas RLS correspondientes para el schema `portafolio`.
+
+Rutas disponibles: `POST /api/proyectos/crear`, `GET /api/proyectos/getall`, `GET /api/proyectos/getbyid/{id}` y `PUT /api/proyectos/editar/{id}`.
 
 ## Supabase y consultas
 

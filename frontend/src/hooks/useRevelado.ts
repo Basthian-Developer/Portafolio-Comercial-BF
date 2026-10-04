@@ -5,9 +5,11 @@ function useRevelado() {
   const contenedor = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const elementos = contenedor.current?.querySelectorAll<HTMLElement>('[data-revelar]');
+    const raiz = contenedor.current;
+    if (!raiz) return;
+
     const movimientoReducido = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (!elementos || movimientoReducido.matches || !('IntersectionObserver' in window)) return;
+    if (movimientoReducido.matches || !('IntersectionObserver' in window)) return;
 
     // Cada elemento se revela una vez y deja de ser observado.
     const observador = new IntersectionObserver((entradas) => {
@@ -19,23 +21,27 @@ function useRevelado() {
       });
     }, { threshold: 0.15 });
 
-    elementos.forEach((elemento) => {
+    function observar(elemento: HTMLElement) {
       elemento.classList.add('revelar-pendiente');
       observador.observe(elemento);
-    });
-
-    // Si la preferencia cambia mientras la página está abierta, mostrar todo.
-    function mostrarTodo() {
-      if (!movimientoReducido.matches) return;
-      observador.disconnect();
-      elementos?.forEach((elemento) => elemento.classList.remove('revelar-pendiente'));
     }
-    movimientoReducido.addEventListener('change', mostrarTodo);
+
+    raiz.querySelectorAll<HTMLElement>('[data-revelar]').forEach(observar);
+
+    // Las tarjetas de proyectos aparecen después de la respuesta de la API.
+    const cambios = new MutationObserver((mutaciones) => {
+      mutaciones.forEach((mutacion) => mutacion.addedNodes.forEach((nodo) => {
+        if (!(nodo instanceof HTMLElement)) return;
+        if (nodo.matches('[data-revelar]')) observar(nodo);
+        nodo.querySelectorAll<HTMLElement>('[data-revelar]').forEach(observar);
+      }));
+    });
+    cambios.observe(raiz, { childList: true, subtree: true });
 
     return () => {
+      cambios.disconnect();
       observador.disconnect();
-      movimientoReducido.removeEventListener('change', mostrarTodo);
-      elementos.forEach((elemento) => elemento.classList.remove('revelar-pendiente'));
+      raiz.querySelectorAll<HTMLElement>('[data-revelar]').forEach((elemento) => elemento.classList.remove('revelar-pendiente'));
     };
   }, []);
 

@@ -19,11 +19,9 @@ function ConsultaModal({ planSeleccionado, planes, onPlanChange, onClose }: Cons
 
   useEffect(() => {
     const overflowAnterior = document.body.style.overflow;
-    const cerrarConEscape = (event: KeyboardEvent) => { if (event.key === 'Escape' && !enviando) onClose(); };
     document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', cerrarConEscape);
-    return () => { document.body.style.overflow = overflowAnterior; window.removeEventListener('keydown', cerrarConEscape); };
-  }, [enviando, onClose]);
+    return () => { document.body.style.overflow = overflowAnterior; };
+  }, []);
 
   async function enviarConsulta(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -47,7 +45,7 @@ function ConsultaModal({ planSeleccionado, planes, onPlanChange, onClose }: Cons
   }
 
   return (
-    <div className="fixed inset-0 z-[70] grid place-items-center bg-black/70 p-4 backdrop-blur-sm" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !enviando) onClose(); }}>
+    <div className="fixed inset-0 z-[70] grid place-items-center bg-black/70 p-4 backdrop-blur-sm" role="presentation" onKeyDown={(event) => { if (event.key === 'Escape' && !enviando) onClose(); }} onMouseDown={(event) => { if (event.target === event.currentTarget && !enviando) onClose(); }}>
       <div role="dialog" aria-modal="true" aria-labelledby={tituloId} className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-3xl border border-borde bg-fondo-2 shadow-2xl">
         <div className="grid min-[760px]:grid-cols-2">
           <section className="p-6 sm:p-8">
